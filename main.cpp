@@ -64,6 +64,8 @@ int main()
       identifiers.print();
       literals.print();
 
+      identifiers.remove("i");
+
       io::writeStaticTable("..\\output\\keywords.txt", keywords);
       io::writeStaticTable("..\\output\\operators.txt", operators);
       io::writeStaticTable("..\\output\\separators.txt", separators);

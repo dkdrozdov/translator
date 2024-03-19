@@ -43,7 +43,7 @@ TableEntry* MutableTable::find(std::string key) {
    int i = 0;
    int target = hash(key);
    int id = target;
-   
+
    while (!(table[id] != nullptr && table[id]->attributes.name == key) && i <= capacity)
    {
       i++;
@@ -109,10 +109,20 @@ void MutableTable::add(Attributes attributes) {
       }
    }
 
-};
+}
+void MutableTable::remove(std::string key)
+{
+   int id = find(key)->tableIndex;
+
+   delete table[id];
+
+   table[id] = nullptr;
+}
+;
 
 void MutableTable::print() {
    std::cout << "Mutable Table - capacity: " << capacity << "; count: " << count << ". " << std::endl;
+
    for (int i = 0; i < capacity; i++) {
       if (table[i] != nullptr)
          table[i]->print();

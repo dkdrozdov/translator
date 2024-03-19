@@ -53,6 +53,11 @@ struct MutableTable {
    void add(Attributes attributes);
 
    /*
+      Удаляет из таблицы запись по имени символа key.
+   */
+   void remove(std::string key);
+
+   /*
       Удваивает объём таблицы и рехеширует её записи.
    */
    void doubleCapacity();

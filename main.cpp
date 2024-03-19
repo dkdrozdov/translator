@@ -1,6 +1,7 @@
 #include <iostream>
 #include "common_includes.h"
 #include "table.h"
+#include "io.h"
 
 static StaticTable generateKeywords() {
    std::vector<std::string> entries = {
@@ -59,7 +60,6 @@ static void demo() {
    std::cout << "identifiers:" << std::endl;
    identifiers.print();
 
-
    // Добавляем константы:
    literals.add(Attributes::IntLiteralAttributes(55));
    literals.add(Attributes::IntLiteralAttributes(63));
@@ -100,5 +100,38 @@ int main()
    //    • операторы присваивания, switch  любой вложенности и в любой последовательности;
    //    • операции + , –, *, = =, != , < .
 
-   demo();
+   //demo();
+   try
+   {
+      StaticTable keywords = io::readStaticTable("..\\input\\keywords.txt");
+      StaticTable operators = io::readStaticTable("..\\input\\operators.txt");
+      StaticTable separators = io::readStaticTable("..\\input\\separators.txt");
+      StaticTable alphabet = io::readStaticTable("..\\input\\alphabet.txt");
+
+      MutableTable identifiers = io::readMutableTable("..\\input\\identifiers.txt");
+      MutableTable literals = io::readMutableTable("..\\input\\literals.txt");
+
+      keywords.print();
+      operators.print();
+      separators.print();
+      alphabet.print();
+
+      identifiers.print();
+      literals.print();
+
+      io::writeStaticTable("..\\output\\keywords.txt", keywords);
+      io::writeStaticTable("..\\output\\operators.txt", operators);
+      io::writeStaticTable("..\\output\\separators.txt", separators);
+      io::writeStaticTable("..\\output\\alphabet.txt", alphabet);
+      io::writeMutableTable("..\\output\\identifiers.txt", identifiers);
+      io::writeMutableTable("..\\output\\literals.txt", literals);
+   }
+   catch (std::exception const& e) {
+      std::cerr << e.what() << std::endl;
+   }
+
+
+
+   //MutableTable identifiers = readMutableTable("identifiers.txt");
+   //MutableTable literals = readMutableTable("literals.txt");
 }

@@ -1,0 +1,7 @@
+var int i 3
+var int j 4
+var int k 5
+var int l 6
+var int m 7
+var int n 8
+var int o 9

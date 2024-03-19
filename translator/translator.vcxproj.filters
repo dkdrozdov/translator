@@ -29,17 +29,37 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\attributes.h">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="..\table.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\common_includes.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\io.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\table.h">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="..\attributes.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\input\alphabet.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\identifiers.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\keywords.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\literals.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\operators.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\input\separators.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

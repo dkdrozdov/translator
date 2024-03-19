@@ -138,6 +138,14 @@
     <ClInclude Include="..\io.h" />
     <ClInclude Include="..\table.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\input\alphabet.txt" />
+    <Text Include="..\input\identifiers.txt" />
+    <Text Include="..\input\keywords.txt" />
+    <Text Include="..\input\literals.txt" />
+    <Text Include="..\input\operators.txt" />
+    <Text Include="..\input\separators.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

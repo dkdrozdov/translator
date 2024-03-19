@@ -128,10 +128,10 @@ void MutableTable::print() {
 
 StaticTable::StaticTable(std::vector<std::string> const& _table) : table(_table) {}
 
-int StaticTable::find(std::string lexeme) {
+int StaticTable::find(std::string name) {
    auto n = table.size();
    for (int i = 0; i < n; i++)
-      if (table[i] == lexeme)
+      if (table[i] == name)
          return i;
 
    throw std::exception("No entry found.");

@@ -2,97 +2,48 @@
 
 #include "common_includes.h"
 
-enum AttributeType {
-   SYMBOL_TYPE,
-   VALUE,
-   ADDRESS,
-   MEMORY,
-   DATA_TYPE,
-   NAME
-};
-
+/*
+  Определяет типы символов.
+*/
 enum SymbolType
 {
-   LITERAL,
-   IDENTIFIER,
+   LITERAL,    // Тип константы.
+   IDENTIFIER, // Тип идентификатора.
 };
 
+/*
+  Определяет типы данных.
+*/
 enum DataType {
-   INT,
+   INT,        // Тип целочисленных данных.
 };
 
-struct Attribute {
-public:
-   virtual AttributeType getType() = 0;
-};
-
-struct SymbolTypeAttribute : Attribute {
-   const SymbolType symbolType;
-
-public:
-   SymbolTypeAttribute(SymbolType type);
-   AttributeType getType();
-};
-
-struct NameAttribute : Attribute {
-   const std::string name;
-
-public:
-   NameAttribute(std::string _name);
-
-   AttributeType getType();
-};
-
-struct ValueAttribute : Attribute {
-   int value;
-
-public:
-   ValueAttribute(int _value);
-
-   AttributeType getType();
-};
-
-struct AddressAttribute : Attribute {
-   const int* address;
-
-public:
-   AddressAttribute(int* _address);;
-
-   AttributeType getType();
-};
-
-struct MemoryAttribute : Attribute {
-   const int memory;
-
-public:
-   MemoryAttribute(int _memory);;
-
-   AttributeType getType();
-};
-
-struct DataTypeAttribute : Attribute {
-   const DataType type;
-
-public:
-   DataTypeAttribute(DataType _type);
-
-   AttributeType getType();
-};
-
+/*
+   Определяет изменяемый набор атрибутов записи таблицы символов.
+*/
 struct Attributes {
 public:
-   SymbolType symbolType;
+   SymbolType symbolType; 
    DataType dataType;
-   std::string name;
-   ValueAttribute value;
-   MemoryAttribute memory;
-   AddressAttribute address;
+   std::string name;       // Имя символа. Для целочисленных констант задаётся как %d и численное значение константы.
+   int value;              // Целочисленное значение символа.
+   int* address;           // Адрес области памяти, выделенной для хранения значения.
+   int memory;             // Размер выделенной области памяти.
 
-   Attributes(SymbolType _symbolType, DataType _dataType, std::string _name, ValueAttribute _value);;
+   Attributes(SymbolType _symbolType, DataType _dataType, std::string _name, int _value);
 
+   /*
+      Создаёт аттрибуты для идентификатора целочисленной переменной.
+   */
    static Attributes IntVariableAttributes(std::string name, int value);
 
+   /*
+      Создаёт аттрибуты для идентификатора целочисленной константы.
+   */
    static Attributes IntLiteralAttributes(int value);
 
+   /*
+      Выводит в консоль атрибуты.
+   */
    void print() const;
 };

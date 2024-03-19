@@ -193,7 +193,7 @@ namespace io {
             attributes.symbolType << " " <<
             attributes.dataType << " " <<
             attributes.name << " " <<
-            attributes.value.value <<
+            attributes.value <<
             std::endl;
       }
 

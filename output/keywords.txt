@@ -5,3 +5,4 @@ index	name
 3	continue
 4	default
 5	int
+6	return

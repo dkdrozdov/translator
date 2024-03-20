@@ -31,16 +31,14 @@ namespace io {
    */
    void writeTokens(std::string path, std::vector<Token> tokens);
 
-   static Tables readTables(std::string keywordsPath,
-      std::string operatorsPath,
-      std::string lettersPath,
-      std::string digitsPath,
-      std::string operatorCharactersPath,
-      std::string bracketsPath,
-      std::string separatorsPath,
-      std::string whitespacesPath,
-      std::string identifiersPath,
-      std::string literalsPath)
+   /*
+      Читает таблицы из файлов.
+      Возвращает связку таблиц Tables.
+   */
+   static Tables readTables(std::string keywordsPath, std::string operatorsPath, std::string lettersPath,
+      std::string digitsPath, std::string operatorCharactersPath, std::string bracketsPath,
+      std::string separatorsPath, std::string whitespacesPath,
+      std::string identifiersPath, std::string literalsPath)
    {
       return Tables(readStaticTable(keywordsPath),
          readStaticTable(operatorsPath),
@@ -54,6 +52,9 @@ namespace io {
          readMutableTable(literalsPath));
    }
 
+   /*
+      Записывает таблицы из связки tables в файлы.
+   */
    static void writeAll(Tables& tables, std::string keywordsPath,
       std::string operatorsPath,
       std::string lettersPath,
@@ -63,7 +64,8 @@ namespace io {
       std::string separatorsPath,
       std::string whitespacesPath,
       std::string identifiersPath,
-      std::string literalsPath) {
+      std::string literalsPath)
+   {
       io::writeStaticTable(keywordsPath, tables.keywords);
       io::writeStaticTable(operatorsPath, tables.operators);
       io::writeStaticTable(lettersPath, tables.letters);

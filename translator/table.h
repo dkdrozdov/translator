@@ -94,19 +94,28 @@ struct StaticTable {
    bool contains(std::string name);
 };
 
+/*
+   Описывает группы символов перехода.
+*/
 enum CharacterClass {
-   LETTER_CHARACTER,
-   DIGIT_CHARACTER,
-   OPERATOR_CHARACTER_CHARACTER,
-   EQUAL_SIGN_CHARACTER,
-   EXCLAMATION_MARK_CHARACTER,
-   SEPARATOR_CHARACTER,
-   WHITESPACE_CHARACTER,
-   BRACKET_CHARACTER,
-   INVALID_CHARACTER,
-   COUNT_CHARACTER
+   LETTER_CHARACTER,             // Латинский алфавит [A-Za-z].
+   DIGIT_CHARACTER,              // Цифры [0-9].
+   OPERATOR_CHARACTER_CHARACTER, // Знаки операторов +|-|*|<|>.
+   EQUAL_SIGN_CHARACTER,         // Знак равенства =.
+   EXCLAMATION_MARK_CHARACTER,   // Восклицательный знак !.
+   SEPARATOR_CHARACTER,          // Разделительные символы ,|;|:.
+   WHITESPACE_CHARACTER,         // Пустые символы (табуляции, пробелы, строчные переходы).
+   BRACKET_CHARACTER,            // Скобки (|)|{|}.
+   INVALID_CHARACTER,            // Недопустимые символы (все остальные).
+   COUNT_CHARACTER               // Вспомогательная запись для подсчёта количества групп.
 };
 
+/*
+   Описывает структуру связки таблиц.
+   Используется вместо таблицы имён, значительно упрощая структуру программы.
+   Содержит все статические и динамические таблицы.
+   См. также: io::readTables, io::writeAll.
+*/
 struct Tables {
    StaticTable keywords;
    StaticTable operators;
@@ -120,11 +129,6 @@ struct Tables {
    MutableTable* identifiers;
    MutableTable* literals;
 
-   //~Tables() {
-   //   delete identifiers;
-   //   delete literals;
-   //}
-
    Tables(StaticTable _keywords,
       StaticTable _operators,
       StaticTable _letters,
@@ -134,30 +138,11 @@ struct Tables {
       StaticTable _separators,
       StaticTable _whitespaces,
       MutableTable* _identifiers,
-      MutableTable* _literals) :
-      keywords(_keywords),
-      operators(_operators),
-      letters(_letters),
-      digits(_digits),
-      operatorCharacters(_operatorCharacters),
-      brackets(_brackets),
-      separators(_separators),
-      whitespaces(_whitespaces),
-      identifiers(_identifiers),
-      literals(_literals) {}
+      MutableTable* _literals);
 
-   CharacterClass classify(char c) {
-      std::string cs = { c };
-
-      if (letters.contains(cs)) return LETTER_CHARACTER;
-      if (digits.contains(cs)) return DIGIT_CHARACTER;
-      if (operatorCharacters.contains(cs)) return OPERATOR_CHARACTER_CHARACTER;
-      if (brackets.contains(cs)) return BRACKET_CHARACTER;
-      if (separators.contains(cs)) return SEPARATOR_CHARACTER;
-      if (whitespaces.contains(cs)) return WHITESPACE_CHARACTER;
-      if (cs == "=") return EQUAL_SIGN_CHARACTER;
-      if (cs == "!") return EXCLAMATION_MARK_CHARACTER;
-
-      return INVALID_CHARACTER;
-   }
+   /* 
+      Классифицирует символ c по группам символов перехода.
+      Возвращает группу перехода CharacterClass.
+   */
+   CharacterClass classify(char c);
 };

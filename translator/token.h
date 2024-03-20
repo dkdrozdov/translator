@@ -3,16 +3,24 @@
 #include "common_includes.h"
 #include "table.h"
 
+/*
+   Описывает типы токенов.
+   Каждый тип соответствует одной таблице символов.
+*/
 enum TokenType {
-   KEYWORD_TOKEN_TYPE,
-   OPERATOR_TOKEN_TYPE,
-   SEPARATOR_TOKEN_TYPE,
-   IDENTIFIER_TOKEN_TYPE,
-   LITERAL_TOKEN_TYPE,
-   BRACKET_TOKEN_TYPE,
-   INVALID_TOKEN_TYPE
+   KEYWORD_TOKEN_TYPE,     // Соответствует таблице ключевых слов.
+   OPERATOR_TOKEN_TYPE,    // Соответствует таблице операторов.
+   SEPARATOR_TOKEN_TYPE,   // Соответствует таблице разделителей.
+   IDENTIFIER_TOKEN_TYPE,  // Соответствует таблице идентификаторов.
+   LITERAL_TOKEN_TYPE,     // Соответствует таблице констант.
+   BRACKET_TOKEN_TYPE,     // Соответствует таблице скобок.
 };
 
+/*
+   Описывает токен символа.
+   Состоит из номера таблицы и идентификатора, указывающих на местоположение символа.
+   Содержит вспомогательные поля для упрощения тестирования.
+*/
 struct Token {
 private:
    TokenType type;
@@ -22,49 +30,24 @@ private:
 
 public:
 
-   TokenType getType() const { return type; }
+   TokenType getType() const;
 
 
    /*
       Возвращает истину, если ссылается на динамическую таблицу.
    */
-   bool isInMutableTable() const {
-      return type == IDENTIFIER_TOKEN_TYPE || type == LITERAL_TOKEN_TYPE;
-   }
+   bool isInMutableTable() const;
 
    /*
       Вычисляемое поле, поскольку индексы могут рехешироваться в процессе токенизации (для динамических таблиц)
    */
-   int getAddress() {
-      if (!isInMutableTable()) return address;
-      try
-      {
-         switch (type)
-         {
-         case IDENTIFIER_TOKEN_TYPE:
-         {
-            return tables->identifiers->find(name)->tableIndex;
-            break;
-         }
-         case LITERAL_TOKEN_TYPE:
-         {
-            return tables->literals->find(name)->tableIndex;
+   int getAddress();;
 
-            break;
-         }
-         }
-      }
-      catch (...)
-      {
-         throw std::exception("Error: couldn't get token address.");
-      }
-      throw std::exception("Error: couldn't get token address.");
-   };
+   // Вспомогательные поля:
+   int line;         // Номер строки в исходном коде.
+   int column;       // Номер столбца в исходном коде.
+   std::string name; // Имя символа.
 
-   // вспомогательные поля:
-   int line;
-   int column;
-   std::string name;
-
-   Token(TokenType _type, int _address, int, int, std::string, Tables*);
+   Token(TokenType _type, int _address, int _line, int _column, std::string _name, Tables* _tables) :
+      type(_type), address(_address), line(_line), column(_column), name(_name), tables(_tables) {}
 };

@@ -1,9 +1,0 @@
-line	column	name	table	address
-0	0	int	0	5
-0	4	%d2	4	3
-0	6	%d3	4	2
-0	7	abc	3	2
-0	10	=	1	7
-0	12	%d1	4	0
-0	14	%d5	4	1
-0	15	;	2	0

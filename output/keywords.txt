@@ -1,8 +1,0 @@
-index	name
-0	switch
-1	case
-2	break
-3	continue
-4	default
-5	int
-6	return

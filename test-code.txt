@@ -1,0 +1,22 @@
+int main(){
+	int i = 0;
+
+	switch(a){
+		case 1:
+		{
+			i = i - 1;
+
+		break;
+		}
+
+		case 2:
+		break;
+		case 3:
+		{
+		i = i + 33;
+		break;
+		}
+		default:
+		break;
+	}
+}

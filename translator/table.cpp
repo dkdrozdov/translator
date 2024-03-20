@@ -44,13 +44,16 @@ TableEntry* MutableTable::find(std::string key) {
    int target = hash(key);
    int id = target;
 
+   // Выход при следующих условиях:
+   // 1. найдено совпадающее имя в ненулевой записи
+   // 1. цикл пошёл по второму кругу
    while (!(table[id] != nullptr && table[id]->attributes.name == key) && i <= capacity)
    {
       i++;
       id = (target + i) % capacity;
    }
 
-   if (table[id]->attributes.name == key) {
+   if (table[id] != nullptr && table[id]->attributes.name == key) {
       return table[id];
    }
 
@@ -71,16 +74,18 @@ int MutableTable::hash(std::string key) const {
 };
 
 
-void MutableTable::add(Attributes attributes) {
+int MutableTable::add(Attributes attributes) {
    std::string key = attributes.name;
    int identifier = hash(key);
 
-   TableEntry* entry = new TableEntry(identifier, attributes);
 
    if (table[identifier] == nullptr)   // Место свободно
    {
+      TableEntry* entry = new TableEntry(identifier, attributes);
       table[identifier] = entry;
       count++;
+
+      return identifier;
    }
    else {   // Место занято
       int i = 0;
@@ -96,16 +101,23 @@ void MutableTable::add(Attributes attributes) {
       }
 
       if (table[id] == nullptr) { // Найдено свободное место
+         TableEntry* entry = new TableEntry(id, attributes);
          table[id] = entry;
          count++;
+
+         return id;
       }
       else if (table[id]->attributes.name == key) { // Найдена запись с таким же ключом
          delete table[id];
+
+         TableEntry* entry = new TableEntry(id, attributes);
          table[id] = entry;
+
+         return id;
       }
       else if (i > capacity) { // В таблице больше нет места
          doubleCapacity();
-         add(attributes);
+         return add(attributes);
       }
    }
 
@@ -145,6 +157,18 @@ int StaticTable::find(std::string name) {
          return i;
 
    throw std::exception("No entry found.");
+}
+
+bool StaticTable::contains(std::string name)
+{
+   try {
+      find(name);
+   }
+   catch (std::exception) {
+      return false;
+   }
+
+   return true;
 };
 
 void StaticTable::print() const {

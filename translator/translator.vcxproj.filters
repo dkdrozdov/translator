@@ -15,30 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\attributes.cpp">
+    <ClCompile Include="scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\io.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\main.cpp">
+    <ClCompile Include="table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\table.cpp">
+    <ClCompile Include="attributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="io.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="token.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\table.h">
+    <ClInclude Include="scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\common_includes.h">
+    <ClInclude Include="io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\io.h">
+    <ClInclude Include="table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\attributes.h">
+    <ClInclude Include="attributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="token.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

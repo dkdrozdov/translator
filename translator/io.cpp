@@ -2,16 +2,16 @@
 
 namespace io {
    StaticTable readStaticTable(std::string path) {
-      std::ifstream operatorsfs(path);
+      std::ifstream ifs(path);
 
-      if (!operatorsfs) {
+      if (!ifs) {
          throw std::exception(("Error opening file: " + path).c_str());
       }
 
       std::string token;
       std::vector<std::string> entries;
 
-      while (operatorsfs >> token) {
+      while (ifs >> token) {
          if (token.size() == 2 && token[0] == '\\') {
             std::string escapeCharacter = "";
 
@@ -43,7 +43,7 @@ namespace io {
             entries.push_back(token);
          }
       }
-      operatorsfs.close();
+      ifs.close();
 
       return StaticTable(entries);
    }
@@ -57,11 +57,14 @@ namespace io {
    file format:
    [var int name value | lit int value]
    */
-   MutableTable readMutableTable(std::string path)
+   MutableTable* readMutableTable(std::string path)
    {
-      std::ifstream operatorsfs(path);
+      std::ifstream ifs(path);
+
+      if (!ifs.is_open()) throw std::exception(("Error reading file: couldn't open " + path).c_str());
+
       std::string token;
-      MutableTable table;
+      MutableTable* table = new MutableTable();
 
       // Finite automata for reading
       readingState state = SYMBOL_TYPE;
@@ -75,7 +78,7 @@ namespace io {
       std::string name{};
       int value;
 
-      while (operatorsfs >> token) {
+      while (ifs >> token) {
          switch (state)
          {
          case SYMBOL_TYPE:
@@ -136,15 +139,15 @@ namespace io {
          if (shouldAddEntry)
          {
             if (isIdentifier)
-               table.add(Attributes::IntVariableAttributes(name, value));
+               table->add(Attributes::IntVariableAttributes(name, value));
             else
-               table.add(Attributes::IntLiteralAttributes(value));
+               table->add(Attributes::IntLiteralAttributes(value));
             shouldAddEntry = false;
          }
 
          state = nextState;
       }
-      operatorsfs.close();
+      ifs.close();
 
       return table;
    }
@@ -155,10 +158,15 @@ namespace io {
       if (!ofs) throw std::exception(("Error opening file: " + path).c_str());
 
       std::vector<std::string> entries = table.table;
-      int n = entries.size();
+      auto n = entries.size();
+
+      ofs << "index\tname" << std::endl;
+
 
       for (int i = 0; i < n; i++) {
          std::string entry = entries[i];
+
+         ofs << i << "\t";
 
          if (entry == "\t") {
             ofs << "\\t" << std::endl;
@@ -179,22 +187,42 @@ namespace io {
    void writeMutableTable(std::string path, MutableTable& table) {
       std::ofstream ofs(path);
 
-      if (!ofs) throw std::exception(("Error opening file: " + path).c_str());
+      if (!ofs.is_open()) throw std::exception(("Error opening file: " + path).c_str());
 
       std::vector<TableEntry*> entries = table.table;
-      int n = entries.size();
+      auto n = entries.size();
 
+      ofs << "data\tname\tvalue\tindex" << std::endl;
 
       for (int i = 0; i < n; i++) {
          TableEntry* entry = entries[i];
          if (entry == nullptr) continue;
          Attributes& attributes = entry->attributes;
          ofs <<
-            attributes.symbolType << " " <<
-            attributes.dataType << " " <<
-            attributes.name << " " <<
-            attributes.value <<
+            attributes.dataType << "\t" <<
+            attributes.name << "\t" <<
+            attributes.value << "\t" <<
+            entry->tableIndex <<
             std::endl;
+      }
+
+      ofs.close();
+   }
+
+   void writeTokens(std::string path, std::vector<Token> tokens)
+   {
+      std::ofstream ofs(path);
+
+      if (!ofs.is_open()) throw std::exception(("Error opening file: " + path).c_str());
+
+      ofs << "line\tcolumn\tname\ttable\taddress" << std::endl;
+
+      for (auto& token : tokens) {
+         ofs << token.line << "\t" <<
+            token.column << "\t" <<
+            token.name << "\t" <<
+            token.getType() << "\t" <<
+            token.getAddress() << std::endl;
       }
 
       ofs.close();

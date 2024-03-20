@@ -127,16 +127,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\attributes.cpp" />
-    <ClCompile Include="..\io.cpp" />
-    <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\table.cpp" />
+    <ClCompile Include="attributes.cpp" />
+    <ClCompile Include="io.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="scanner.cpp" />
+    <ClCompile Include="table.cpp" />
+    <ClCompile Include="token.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\attributes.h" />
-    <ClInclude Include="..\common_includes.h" />
-    <ClInclude Include="..\io.h" />
-    <ClInclude Include="..\table.h" />
+    <ClInclude Include="attributes.h" />
+    <ClInclude Include="common_includes.h" />
+    <ClInclude Include="io.h" />
+    <ClInclude Include="scanner.h" />
+    <ClInclude Include="table.h" />
+    <ClInclude Include="token.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\input\alphabet.txt" />

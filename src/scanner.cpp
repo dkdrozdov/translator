@@ -1,23 +1,23 @@
 #include "scanner.h"
 
 void scanner::Scanner::setDFATransition(DFA& dfa, DFAState state, CharacterClass characterClass, DFAState nextState) {
-   dfa.setTransition(state, characterClass, nextState);
+   dfa.setTransition((int)state, (int)characterClass, (int)nextState);
 }
 
 DFA scanner::Scanner::buildDFA(Tables& tables) {
-   DFA df(DFAState::COUNT, CharacterClass::COUNT_CHARACTER, FAIL);
+   DFA df((int)DFAState::COUNT, (int)CharacterClass::COUNT, (int)DFAState::FAIL);
 
-   setDFATransition(df, START, OPERATOR_CHARACTER_CHARACTER, OPERATOR);
-   setDFATransition(df, START, EQUAL_SIGN_CHARACTER, EQUALS);
-   setDFATransition(df, EQUALS, EQUAL_SIGN_CHARACTER, OPERATOR);
-   setDFATransition(df, START, EXCLAMATION_MARK_CHARACTER, EXCLAMATION);
-   setDFATransition(df, EXCLAMATION, EQUAL_SIGN_CHARACTER, OPERATOR);
-   setDFATransition(df, START, LETTER_CHARACTER, IDENTIFIER);
-   setDFATransition(df, IDENTIFIER, LETTER_CHARACTER, IDENTIFIER);
-   setDFATransition(df, IDENTIFIER, DIGIT_CHARACTER, IDENTIFIER);
-   setDFATransition(df, START, DIGIT_CHARACTER, LITERAL);
-   setDFATransition(df, START, SEPARATOR_CHARACTER, SEPARATOR);
-   setDFATransition(df, START, BRACKET_CHARACTER, BRACKET);
+   setDFATransition(df, DFAState::START, CharacterClass::OPERATOR_CHARACTER, DFAState::OPERATOR);
+   setDFATransition(df, DFAState::START, CharacterClass::EQUAL_SIGN, DFAState::EQUALS);
+   setDFATransition(df, DFAState::EQUALS, CharacterClass::EQUAL_SIGN, DFAState::OPERATOR);
+   setDFATransition(df, DFAState::START, CharacterClass::EXCLAMATION_MARK, DFAState::EXCLAMATION);
+   setDFATransition(df, DFAState::EXCLAMATION, CharacterClass::EQUAL_SIGN, DFAState::OPERATOR);
+   setDFATransition(df, DFAState::START, CharacterClass::LETTER, DFAState::IDENTIFIER);
+   setDFATransition(df, DFAState::IDENTIFIER, CharacterClass::LETTER, DFAState::IDENTIFIER);
+   setDFATransition(df, DFAState::IDENTIFIER, CharacterClass::DIGIT, DFAState::IDENTIFIER);
+   setDFATransition(df, DFAState::START, CharacterClass::DIGIT, DFAState::LITERAL);
+   setDFATransition(df, DFAState::START, CharacterClass::SEPARATOR, DFAState::SEPARATOR);
+   setDFATransition(df, DFAState::START, CharacterClass::BRACKET, DFAState::BRACKET);
 
    return df;
 }
@@ -27,22 +27,22 @@ scanner::Scanner::Scanner(Tables& _tables, io::IO& _io) : tables(_tables), io(_i
 Token* scanner::Scanner::createToken(DFAState state, std::string name) {
    switch (state)
    {
-   case IDENTIFIER:
+   case DFAState::IDENTIFIER:
    {
       if (tables.keywords.contains(name))
-         return new Token(KEYWORD_TOKEN_TYPE, tables.keywords.find(name), currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::KEYWORD, tables.keywords.find(name), currentLine, currentColumn, name, &tables);
 
       TableEntry* entry = tables.identifiers->find(name);
 
       if (entry != nullptr)
-         return new Token(IDENTIFIER_TOKEN_TYPE, entry->tableIndex, currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::IDENTIFIER, entry->tableIndex, currentLine, currentColumn, name, &tables);
       else
-         return new Token(IDENTIFIER_TOKEN_TYPE, tables.identifiers->add(Attributes::IntVariableAttributes(name, 0)), currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::IDENTIFIER, tables.identifiers->add(Attributes::IntVariableAttributes(name, 0)), currentLine, currentColumn, name, &tables);
 
       return 0;   // For some reason IDENTIFIER state cannot cause any errors.
       break;
    }
-   case LITERAL:
+   case DFAState::LITERAL:
    {
       int value;
 
@@ -58,17 +58,17 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name) {
       TableEntry* entry = tables.literals->find(formattedName);
 
       if (entry != nullptr)
-         return new Token(LITERAL_TOKEN_TYPE, entry->tableIndex, currentLine, currentColumn, formattedName, &tables);
+         return new Token(TokenType::LITERAL, entry->tableIndex, currentLine, currentColumn, formattedName, &tables);
       else
-         return new Token(LITERAL_TOKEN_TYPE, tables.literals->add(Attributes::IntLiteralAttributes(value)), currentLine, currentColumn, formattedName, &tables);
+         return new Token(TokenType::LITERAL, tables.literals->add(Attributes::IntLiteralAttributes(value)), currentLine, currentColumn, formattedName, &tables);
 
       break;
    }
-   case EQUALS:   // < умышленный пропуск break: случай EQUALS является частью OPERATOR.
-   case OPERATOR:
+   case DFAState::EQUALS:   // < умышленный пропуск break: случай EQUALS является частью OPERATOR.
+   case DFAState::OPERATOR:
    {
       if (tables.operators.contains(name))
-         return new Token(OPERATOR_TOKEN_TYPE, tables.operators.find(name), currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::OPERATOR, tables.operators.find(name), currentLine, currentColumn, name, &tables);
       else
       {
          io.logLexicalError("Error creating token. Couldn't find operator "s + name, currentLine, currentColumn);
@@ -77,10 +77,10 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name) {
 
       break;
    }
-   case SEPARATOR:
+   case DFAState::SEPARATOR:
    {
       if (tables.separators.contains(name))
-         return new Token(SEPARATOR_TOKEN_TYPE, tables.separators.find(name), currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::SEPARATOR, tables.separators.find(name), currentLine, currentColumn, name, &tables);
       else
       {
          io.logLexicalError("Error creating token. Couldn't find separator "s + name, currentLine, currentColumn);
@@ -88,10 +88,10 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name) {
       }
       break;
    }
-   case BRACKET:
+   case DFAState::BRACKET:
    {
       if (tables.brackets.contains(name))
-         return new Token(BRACKET_TOKEN_TYPE, tables.brackets.find(name), currentLine, currentColumn, name, &tables);
+         return new Token(TokenType::BRACKET, tables.brackets.find(name), currentLine, currentColumn, name, &tables);
       else
       {
          io.logLexicalError("Error creating token. Couldn't find bracket "s + name, currentLine, currentColumn);
@@ -101,7 +101,7 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name) {
    }
    default:
    {
-      io.logLexicalError("Error creating token. Invalid DFA state: "s + std::to_string(state), currentLine, currentColumn);
+      io.logLexicalError("Error creating token. Invalid DFA state: "s + std::to_string((int)state), currentLine, currentColumn);
       return nullptr;
 
       break;
@@ -123,8 +123,8 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
 
    char c;
    std::string chain;
-   int previousState = START;
-   dfa.setState(START);
+   DFAState previousState = DFAState::START;
+   dfa.setState((int)DFAState::START);
 
    /*    Позиция цепочки в коде     */
    currentLine = 1;
@@ -144,28 +144,28 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
 
       CharacterClass characterClass = tables.classify(c);
 
-      if (characterClass == WHITESPACE_CHARACTER) {
+      if (characterClass == CharacterClass::WHITESPACE) {
          discard = true;
          tokenize = true;
       }
 
-      if (characterClass == INVALID_CHARACTER)
+      if (characterClass == CharacterClass::INVALID)
       {
          io.logLexicalError("Invalid character: "s + c, currentLine, currentColumn);
          continue;
       }
 
       // try/catch removed: cannot recover from this exception
-      dfa.transition(characterClass);
+      dfa.transition((int)characterClass);
 
-      if (dfa.getState() == FAIL && chain != "")   // ДКА в состоянии неудачи, что означает что цепочка завершена или недопустима.
+      if (dfa.getState() == (int)DFAState::FAIL && chain != "")   // ДКА в состоянии неудачи, что означает что цепочка завершена или недопустима.
       {
          Token* newToken = createToken((DFAState)previousState, chain);
          if (newToken)
             tokens.push_back(*newToken); // Проверка цепочки и добавление нового токена.
 
 
-         dfa.setState(START); // Сброс ДКА.
+         dfa.setState((int)DFAState::START); // Сброс ДКА.
          chain = "";          // Сброс цепочки.
          startingCharacter = currentColumn;
          tokenize = true;
@@ -175,7 +175,7 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
       {
          chain += c;
          if (tokenize) {
-            dfa.transition(characterClass);
+            dfa.transition((int)characterClass);
             tokenize = false;
          }
       }
@@ -187,12 +187,12 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
 
       if (chain == "")
       {
-         dfa.setState(START);
-         previousState = START;
+         dfa.setState((int)DFAState::START);
+         previousState = DFAState::START;
          startingCharacter = currentColumn;
       }
       else
-         previousState = dfa.getState();
+         previousState = (DFAState)dfa.getState();
    }
    if (chain != "") {   // Цикл завершился досрочно, попытка сделать токен из последней цепочки.
       // try/catch removed: createToken should handle errors and log them

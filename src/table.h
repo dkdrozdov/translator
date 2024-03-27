@@ -97,17 +97,17 @@ struct StaticTable {
 /*
    Описывает группы символов перехода.
 */
-enum CharacterClass {
-   LETTER_CHARACTER,             // Латинский алфавит [A-Za-z].
-   DIGIT_CHARACTER,              // Цифры [0-9].
-   OPERATOR_CHARACTER_CHARACTER, // Знаки операторов +|-|*|<|>.
-   EQUAL_SIGN_CHARACTER,         // Знак равенства =.
-   EXCLAMATION_MARK_CHARACTER,   // Восклицательный знак !.
-   SEPARATOR_CHARACTER,          // Разделительные символы ,|;|:.
-   WHITESPACE_CHARACTER,         // Пустые символы (табуляции, пробелы, строчные переходы).
-   BRACKET_CHARACTER,            // Скобки (|)|{|}.
-   INVALID_CHARACTER,            // Недопустимые символы (все остальные).
-   COUNT_CHARACTER               // Вспомогательная запись для подсчёта количества групп.
+enum class CharacterClass {
+   LETTER,             // Латинский алфавит [A-Za-z].
+   DIGIT,              // Цифры [0-9].
+   OPERATOR_CHARACTER, // Знаки операторов +|-|*|<|>.
+   EQUAL_SIGN,         // Знак равенства =.
+   EXCLAMATION_MARK,   // Восклицательный знак !.
+   SEPARATOR,          // Разделительные символы ,|;|:.
+   WHITESPACE,         // Пустые символы (табуляции, пробелы, строчные переходы).
+   BRACKET,            // Скобки (|)|{|}.
+   INVALID,            // Недопустимые символы (все остальные).
+   COUNT               // Вспомогательная запись для подсчёта количества групп.
 };
 
 /*

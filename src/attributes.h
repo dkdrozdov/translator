@@ -5,7 +5,7 @@
 /*
   Определяет типы символов.
 */
-enum SymbolType
+enum class SymbolType
 {
    LITERAL,    // Тип константы.
    IDENTIFIER, // Тип идентификатора.
@@ -14,7 +14,7 @@ enum SymbolType
 /*
   Определяет типы данных.
 */
-enum DataType {
+enum class DataType {
    INT,        // Тип целочисленных данных.
 };
 

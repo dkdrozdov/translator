@@ -1,34 +1,34 @@
 #include "token.h"
 
 
- TokenType Token::getType() const { return type; }
+TokenType Token::getType() const { return type; }
 
- bool Token::isInMutableTable() const {
-    return type == IDENTIFIER_TOKEN_TYPE || type == LITERAL_TOKEN_TYPE;
+bool Token::isInMutableTable() const {
+   return type == TokenType::IDENTIFIER || type == TokenType::LITERAL;
 }
 
- int Token::getAddress() {
-    if (!isInMutableTable()) return address;
-    try
-    {
-        switch (type)
-        {
-        case IDENTIFIER_TOKEN_TYPE:
-        {
-            return tables->identifiers->find(name)->tableIndex;
-            break;
-        }
-        case LITERAL_TOKEN_TYPE:
-        {
-            return tables->literals->find(name)->tableIndex;
+int Token::getAddress() {
+   if (!isInMutableTable()) return address;
+   try
+   {
+      switch (type)
+      {
+      case TokenType::IDENTIFIER:
+      {
+         return tables->identifiers->find(name)->tableIndex;
+         break;
+      }
+      case TokenType::LITERAL:
+      {
+         return tables->literals->find(name)->tableIndex;
 
-            break;
-        }
-        }
-    }
-    catch (...)
-    {
-        throw std::exception("Error: couldn't get token address.");
-    }
-    throw std::exception("Error: couldn't get token address.");
+         break;
+      }
+      }
+   }
+   catch (...)
+   {
+      throw std::exception("Error: couldn't get token address.");
+   }
+   throw std::exception("Error: couldn't get token address.");
 }

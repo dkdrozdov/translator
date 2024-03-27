@@ -65,7 +65,7 @@ namespace io {
       return new StaticTable(entries);
    }
 
-   enum readingState {
+   enum class ReadingState {
       SYMBOL_TYPE, DATA_TYPE, NAME, VALUE
    };
 
@@ -87,8 +87,8 @@ namespace io {
       MutableTable* table = new MutableTable();
 
       // Finite automata for reading
-      readingState state = SYMBOL_TYPE;
-      readingState nextState;
+      ReadingState state = ReadingState::SYMBOL_TYPE;
+      ReadingState nextState;
       bool isIdentifier = false;
       bool shouldAddEntry = false;
 
@@ -101,42 +101,42 @@ namespace io {
       while (ifs >> token) {
          switch (state)
          {
-         case SYMBOL_TYPE:
+         case ReadingState::SYMBOL_TYPE:
          {
             if (token == "var")
             {
-               symbolType = IDENTIFIER;
+               symbolType = SymbolType::IDENTIFIER;
                isIdentifier = true;
             }
             else if (token == "lit")
             {
-               symbolType = LITERAL;
+               symbolType = SymbolType::LITERAL;
                isIdentifier = false;
             }
             else throw std::exception(("Invalid symbol type: "s + token).c_str());
 
-            nextState = DATA_TYPE;
+            nextState = ReadingState::DATA_TYPE;
 
             break;
          }
-         case DATA_TYPE:
+         case ReadingState::DATA_TYPE:
          {
-            if (token == "int") dataType = INT;
+            if (token == "int") dataType = DataType::INT;
             else throw std::exception(("Invalid data type: "s + token).c_str());
 
-            nextState = isIdentifier ? NAME : VALUE;
+            nextState = isIdentifier ? ReadingState::NAME : ReadingState::VALUE;
 
             break;
          }
-         case NAME:
+         case ReadingState::NAME:
          {
             name = token;
 
-            nextState = VALUE;
+            nextState = ReadingState::VALUE;
 
             break;
          }
-         case VALUE:
+         case ReadingState::VALUE:
          {
             try
             {
@@ -147,7 +147,7 @@ namespace io {
                throw std::exception(("Invalid number: "s + token).c_str());
             }
 
-            nextState = SYMBOL_TYPE;
+            nextState = ReadingState::SYMBOL_TYPE;
             shouldAddEntry = true;
 
             break;
@@ -226,7 +226,7 @@ namespace io {
          if (entry == nullptr) continue;
          Attributes& attributes = entry->attributes;
          ofs <<
-            attributes.dataType << "," <<
+            (int)attributes.dataType << "," <<
             attributes.name << "," <<
             attributes.value << "," <<
             entry->tableIndex <<
@@ -251,7 +251,7 @@ namespace io {
          ofs << token.line << "," <<
             token.column << "," <<
             token.name << "," <<
-            token.getType() << "," <<
+            (int)token.getType() << "," <<
             token.getAddress() << std::endl;
       }
 

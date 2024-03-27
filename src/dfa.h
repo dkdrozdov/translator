@@ -19,9 +19,9 @@ public:
 
    /*
       Создаёт ДКА с количеством состояний _stateCount и количеством символов перехода _transitionCharacterCount.
-      Параметр failState задаёт состояние перехода по умолчанию.
+      Параметр defaultState задаёт состояние перехода по умолчанию.
    */
-   DFA(int _stateCount, int _transitionCharacterCount, int failState);
+   DFA(int _stateCount, int _transitionCharacterCount, int defaultState);
 
    ~DFA();
 

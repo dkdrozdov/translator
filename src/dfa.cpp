@@ -1,12 +1,12 @@
 #include "dfa.h"
 
-DFA::DFA(int _stateCount, int _transitionCharacterCount, int failState) : stateCount(_stateCount), transitionCharacterCount(_transitionCharacterCount) {
+DFA::DFA(int _stateCount, int _transitionCharacterCount, int defaultState) : stateCount(_stateCount), transitionCharacterCount(_transitionCharacterCount) {
    matrix = new int* [_stateCount];
 
    for (int i = 0; i < stateCount; i++) {
       matrix[i] = new int[_transitionCharacterCount];
       for (int j = 0; j < transitionCharacterCount; j++) {
-         matrix[i][j] = failState;
+         matrix[i][j] = (int)defaultState;
       }
    }
 }
@@ -19,14 +19,14 @@ DFA::~DFA() {
 }
 
 void DFA::setTransition(int state, int transitionCharacter, int nextState) {
-   matrix[state][transitionCharacter] = nextState;
+   matrix[(int)state][(int)transitionCharacter] = nextState;
 }
 
 void DFA::transition(int transitionCharacter) {
-   if (transitionCharacter >= transitionCharacterCount)
-      throw std::out_of_range("Illegal transition character: "s + std::to_string(transitionCharacter));
+   if ((int)transitionCharacter >= transitionCharacterCount || (int)transitionCharacter < 0)
+      throw std::out_of_range("Illegal transition character: "s + std::to_string((int)transitionCharacter));
 
-   currentState = matrix[currentState][transitionCharacter];
+   currentState = matrix[currentState][(int)transitionCharacter];
 }
 
 int DFA::getState() const {
@@ -34,5 +34,5 @@ int DFA::getState() const {
 }
 
 void DFA::setState(int state) {
-   currentState = state;
+   currentState = (int)state;
 }

@@ -15,7 +15,7 @@ namespace scanner {
    */
    struct Scanner {
       Tables tables;          // Связка таблиц.
-      DFA dfa;                // ДКА.
+      DFA dfa;           // ДКА.
       io::IO& io;             // Ссылка на объект io для вывода ошибок.
       int currentLine;        // Номер текущей строки.
       int currentColumn;      // Номер текущего символа в строке.
@@ -26,7 +26,7 @@ namespace scanner {
       /*
          Описывает состояния ДКА.
       */
-      enum DFAState {
+      enum class DFAState {
          START, EXCLAMATION, EQUALS, OPERATOR, IDENTIFIER, LITERAL, SEPARATOR, BRACKET, FAIL, COUNT
       };
 

@@ -198,14 +198,14 @@ Tables::Tables(StaticTable _keywords, StaticTable _operators, StaticTable _lette
 CharacterClass Tables::classify(char c) {
    std::string cs = { c };
 
-   if (letters.contains(cs)) return LETTER_CHARACTER;
-   if (digits.contains(cs)) return DIGIT_CHARACTER;
-   if (operatorCharacters.contains(cs)) return OPERATOR_CHARACTER_CHARACTER;
-   if (brackets.contains(cs)) return BRACKET_CHARACTER;
-   if (separators.contains(cs)) return SEPARATOR_CHARACTER;
-   if (whitespaces.contains(cs)) return WHITESPACE_CHARACTER;
-   if (cs == "=") return EQUAL_SIGN_CHARACTER;
-   if (cs == "!") return EXCLAMATION_MARK_CHARACTER;
+   if (letters.contains(cs)) return CharacterClass::LETTER;
+   if (digits.contains(cs)) return CharacterClass::DIGIT;
+   if (operatorCharacters.contains(cs)) return CharacterClass::OPERATOR_CHARACTER;
+   if (brackets.contains(cs)) return CharacterClass::BRACKET;
+   if (separators.contains(cs)) return CharacterClass::SEPARATOR;
+   if (whitespaces.contains(cs)) return CharacterClass::WHITESPACE;
+   if (cs == "=") return CharacterClass::EQUAL_SIGN;
+   if (cs == "!") return CharacterClass::EXCLAMATION_MARK;
 
-   return INVALID_CHARACTER;
+   return CharacterClass::INVALID;
 }

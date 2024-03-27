@@ -1,11 +1,28 @@
 #include "io.h"
 
 namespace io {
-   StaticTable readStaticTable(std::string path) {
+
+   void logLexicalError(std::string message, int line, int column, std::ostream& errorStream)
+   {
+      errorStream << message << " at line " << line << "; character " << column << "." << std::endl;
+   }
+
+   void logError(std::string message, std::ostream& errorStream)
+   {  
+      errorStream << message << std::endl;
+   }
+
+   void logFileOpeningError(std::string name, std::ostream& errorStream)
+   {
+      errorStream << "Error: couldn't open file " << name << "." << std::endl;
+   }
+
+   StaticTable* readStaticTable(std::string path) {
       std::ifstream ifs(path);
 
       if (!ifs) {
-         throw std::exception(("Error opening file: " + path).c_str());
+         logFileOpeningError(path, std::cerr);
+         return nullptr;
       }
 
       std::string token;
@@ -34,7 +51,7 @@ namespace io {
                break;
             }
             default:
-               throw std::exception("Invalid escape character: " + token[1]);
+               throw std::exception(("Invalid escape character: "s + std::to_string(token[1])).c_str());
                break;
             }
             entries.push_back(escapeCharacter);
@@ -45,7 +62,7 @@ namespace io {
       }
       ifs.close();
 
-      return StaticTable(entries);
+      return new StaticTable(entries);
    }
 
    enum readingState {
@@ -61,7 +78,10 @@ namespace io {
    {
       std::ifstream ifs(path);
 
-      if (!ifs.is_open()) throw std::exception(("Error reading file: couldn't open " + path).c_str());
+      if (!ifs.is_open()) {
+         logFileOpeningError(path, std::cerr);
+         return nullptr;
+      }
 
       std::string token;
       MutableTable* table = new MutableTable();
@@ -93,7 +113,7 @@ namespace io {
                symbolType = LITERAL;
                isIdentifier = false;
             }
-            else throw std::exception(("Invalid symbol type: " + token).c_str());
+            else throw std::exception(("Invalid symbol type: "s + token).c_str());
 
             nextState = DATA_TYPE;
 
@@ -102,7 +122,7 @@ namespace io {
          case DATA_TYPE:
          {
             if (token == "int") dataType = INT;
-            else throw std::exception(("Invalid data type: " + token).c_str());
+            else throw std::exception(("Invalid data type: "s + token).c_str());
 
             nextState = isIdentifier ? NAME : VALUE;
 
@@ -124,7 +144,7 @@ namespace io {
             }
             catch (...)
             {
-               throw std::exception(("Invalid number: " + token).c_str());
+               throw std::exception(("Invalid number: "s + token).c_str());
             }
 
             nextState = SYMBOL_TYPE;
@@ -155,12 +175,16 @@ namespace io {
    void writeStaticTable(std::string path, StaticTable& table) {
       std::ofstream ofs(path);
 
-      if (!ofs) throw std::exception(("Error opening file: " + path).c_str());
+      if (!ofs)
+      {
+         logFileOpeningError(path, std::cerr);
+         return;
+      }
 
       std::vector<std::string> entries = table.table;
       auto n = entries.size();
 
-      ofs << "index\tname" << std::endl;
+      ofs << "index,name" << std::endl;
 
 
       for (int i = 0; i < n; i++) {
@@ -187,7 +211,10 @@ namespace io {
    void writeMutableTable(std::string path, MutableTable& table) {
       std::ofstream ofs(path);
 
-      if (!ofs.is_open()) throw std::exception(("Error opening file: " + path).c_str());
+      if (!ofs.is_open())
+      {
+         logFileOpeningError(path, std::cerr);
+      }
 
       std::vector<TableEntry*> entries = table.table;
       auto n = entries.size();
@@ -213,7 +240,10 @@ namespace io {
    {
       std::ofstream ofs(path);
 
-      if (!ofs.is_open()) throw std::exception(("Error opening file: " + path).c_str());
+      if (!ofs.is_open())
+      {
+         logFileOpeningError(path, std::cerr); // TODO: replace std::cerr with stream stored in io class.
+      }
 
       ofs << "line\tcolumn\tname\ttable\taddress" << std::endl;
 

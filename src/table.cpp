@@ -44,9 +44,9 @@ TableEntry* MutableTable::find(std::string key) {
    int target = hash(key);
    int id = target;
 
-   // Выход при следующих условиях:
-   // 1. найдено совпадающее имя в ненулевой записи
-   // 1. цикл пошёл по второму кругу
+   // Р’С‹С…РѕРґ РїСЂРё СЃР»РµРґСѓСЋС‰РёС… СѓСЃР»РѕРІРёСЏС…:
+   // 1. РЅР°Р№РґРµРЅРѕ СЃРѕРІРїР°РґР°СЋС‰РµРµ РёРјСЏ РІ РЅРµРЅСѓР»РµРІРѕР№ Р·Р°РїРёСЃРё
+   // 1. С†РёРєР» РїРѕС€С‘Р» РїРѕ РІС‚РѕСЂРѕРјСѓ РєСЂСѓРіСѓ
    while (!(table[id] != nullptr && table[id]->attributes.name == key) && i <= capacity)
    {
       i++;
@@ -79,7 +79,7 @@ int MutableTable::add(Attributes attributes) {
    int identifier = hash(key);
 
 
-   if (table[identifier] == nullptr)   // Место свободно
+   if (table[identifier] == nullptr)   // РњРµСЃС‚Рѕ СЃРІРѕР±РѕРґРЅРѕ
    {
       TableEntry* entry = new TableEntry(identifier, attributes);
       table[identifier] = entry;
@@ -87,27 +87,27 @@ int MutableTable::add(Attributes attributes) {
 
       return identifier;
    }
-   else {   // Место занято
+   else {   // РњРµСЃС‚Рѕ Р·Р°РЅСЏС‚Рѕ
       int i = 0;
       int id = identifier;
 
-      // Попытка найти подходящее место
-      while ((table[id] != nullptr             // Свободное место
-         && table[id]->attributes.name != key  // Запись с таким ключом уже имеется
-         && i <= capacity))                                             // Места нет и таблица заполнена
+      // РџРѕРїС‹С‚РєР° РЅР°Р№С‚Рё РїРѕРґС…РѕРґСЏС‰РµРµ РјРµСЃС‚Рѕ
+      while ((table[id] != nullptr             // РЎРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ
+         && table[id]->attributes.name != key  // Р—Р°РїРёСЃСЊ СЃ С‚Р°РєРёРј РєР»СЋС‡РѕРј СѓР¶Рµ РёРјРµРµС‚СЃСЏ
+         && i <= capacity))                                             // РњРµСЃС‚Р° РЅРµС‚ Рё С‚Р°Р±Р»РёС†Р° Р·Р°РїРѕР»РЅРµРЅР°
       {
          i++;
          id = (identifier + i) % capacity;
       }
 
-      if (table[id] == nullptr) { // Найдено свободное место
+      if (table[id] == nullptr) { // РќР°Р№РґРµРЅРѕ СЃРІРѕР±РѕРґРЅРѕРµ РјРµСЃС‚Рѕ
          TableEntry* entry = new TableEntry(id, attributes);
          table[id] = entry;
          count++;
 
          return id;
       }
-      else if (table[id]->attributes.name == key) { // Найдена запись с таким же ключом
+      else if (table[id]->attributes.name == key) { // РќР°Р№РґРµРЅР° Р·Р°РїРёСЃСЊ СЃ С‚Р°РєРёРј Р¶Рµ РєР»СЋС‡РѕРј
          delete table[id];
 
          TableEntry* entry = new TableEntry(id, attributes);
@@ -115,7 +115,7 @@ int MutableTable::add(Attributes attributes) {
 
          return id;
       }
-      else if (i > capacity) { // В таблице больше нет места
+      else if (i > capacity) { // Р’ С‚Р°Р±Р»РёС†Рµ Р±РѕР»СЊС€Рµ РЅРµС‚ РјРµСЃС‚Р°
          doubleCapacity();
          return add(attributes);
       }

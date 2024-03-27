@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{ed252dcb-1d14-4f31-9706-dd407a16ad7b}</ProjectGuid>
+    <ProjectGuid>{dc64ccb2-2935-4e70-b010-d187c1a14b0b}</ProjectGuid>
     <RootNamespace>translator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -104,6 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,30 +129,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="attributes.cpp" />
-    <ClCompile Include="dfa.cpp" />
-    <ClCompile Include="io.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="scanner.cpp" />
-    <ClCompile Include="table.cpp" />
-    <ClCompile Include="token.cpp" />
+    <ClInclude Include="src\attributes.h" />
+    <ClInclude Include="src\common_includes.h" />
+    <ClInclude Include="src\dfa.h" />
+    <ClInclude Include="src\io.h" />
+    <ClInclude Include="src\scanner.h" />
+    <ClInclude Include="src\table.h" />
+    <ClInclude Include="src\tables.h" />
+    <ClInclude Include="src\token.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="attributes.h" />
-    <ClInclude Include="common_includes.h" />
-    <ClInclude Include="dfa.h" />
-    <ClInclude Include="io.h" />
-    <ClInclude Include="scanner.h" />
-    <ClInclude Include="table.h" />
-    <ClInclude Include="token.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\input\alphabet.txt" />
-    <Text Include="..\input\identifiers.txt" />
-    <Text Include="..\input\keywords.txt" />
-    <Text Include="..\input\literals.txt" />
-    <Text Include="..\input\operators.txt" />
-    <Text Include="..\input\separators.txt" />
+    <ClCompile Include="src\attributes.cpp" />
+    <ClCompile Include="src\dfa.cpp" />
+    <ClCompile Include="src\io.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\scanner.cpp" />
+    <ClCompile Include="src\table.cpp" />
+    <ClCompile Include="src\token.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

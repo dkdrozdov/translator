@@ -5,7 +5,7 @@ void scanner::Scanner::setDFATransition(DFA& dfa, DFAState state, CharacterClass
 }
 
 DFA scanner::Scanner::buildDFA(Tables& tables) {
-   DFA df((int)DFAState::COUNT, (int)CharacterClass::COUNT, (int)DFAState::FAIL);
+   DFA df((int)DFAState::COUNT, (int)CharacterClass::COUNT, (int)DFAState::FINAL);
 
    setDFATransition(df, DFAState::START, CharacterClass::OPERATOR_CHARACTER, DFAState::OPERATOR);
    setDFATransition(df, DFAState::START, CharacterClass::EQUAL_SIGN, DFAState::EQUALS);
@@ -16,8 +16,11 @@ DFA scanner::Scanner::buildDFA(Tables& tables) {
    setDFATransition(df, DFAState::IDENTIFIER, CharacterClass::LETTER, DFAState::IDENTIFIER);
    setDFATransition(df, DFAState::IDENTIFIER, CharacterClass::DIGIT, DFAState::IDENTIFIER);
    setDFATransition(df, DFAState::START, CharacterClass::DIGIT, DFAState::LITERAL);
+   setDFATransition(df, DFAState::LITERAL, CharacterClass::DIGIT, DFAState::LITERAL);
    setDFATransition(df, DFAState::START, CharacterClass::SEPARATOR, DFAState::SEPARATOR);
    setDFATransition(df, DFAState::START, CharacterClass::BRACKET, DFAState::BRACKET);
+   setDFATransition(df, DFAState::LITERAL, CharacterClass::LETTER, DFAState::ILLEGAL);
+
 
    return df;
 }
@@ -135,12 +138,12 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
    bool discard = false;
 
    while (ifs.get(c)) {
-      currentColumn++;
-
       if (c == '\n') {
          currentLine++;
-         currentColumn = 1;
+         currentColumn = 0;
       }
+      else                    // Переход на новую строку не 
+         currentColumn++;     // занимает столбец в документе.
 
       CharacterClass characterClass = tables.classify(c);
 
@@ -158,17 +161,22 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
       // try/catch removed: cannot recover from this exception
       dfa.transition((int)characterClass);
 
-      if (dfa.getState() == (int)DFAState::FAIL && chain != "")   // ДКА в состоянии неудачи, что означает что цепочка завершена или недопустима.
-      {
+      DFAState state = (DFAState)dfa.getState();
+
+      if ((state == DFAState::FINAL || state == DFAState::ILLEGAL) && chain != "")  // ДКА в конечном состоянии, что означает что цепочка завершена 
+      {                                                                             // и следующий символ принадлежит новой цепочке.
          Token* newToken = createToken((DFAState)previousState, chain);
          if (newToken)
             tokens.push_back(*newToken); // Проверка цепочки и добавление нового токена.
-
 
          dfa.setState((int)DFAState::START); // Сброс ДКА.
          chain = "";          // Сброс цепочки.
          startingCharacter = currentColumn;
          tokenize = true;
+
+         if (state == DFAState::ILLEGAL) { // ДКА в запрещенном состоянии, означающем, что символ не может следовать за цепочкой.
+            io.logLexicalError("Illegal combination of symbols: ", currentLine, currentColumn);
+         }
       }
 
       if (!discard)

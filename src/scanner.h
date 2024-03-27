@@ -14,10 +14,14 @@ namespace scanner {
       Состоит из связки таблиц и ДКА.
    */
    struct Scanner {
-      Tables tables; // Связка таблиц.
-      DFA dfa;       // ДКА.
+      Tables tables;          // Связка таблиц.
+      DFA dfa;                // ДКА.
+      io::IO& io;             // Ссылка на объект io для вывода ошибок.
+      int currentLine;        // Номер текущей строки.
+      int currentColumn;      // Номер текущего символа в строке.
+      int chainStartColumn;   // Номер символа, с которого начинается текущая цепочка.
 
-      Scanner(Tables& _tables);
+      Scanner(Tables& _tables, io::IO& _io);
 
       /*
          Описывает состояния ДКА.
@@ -41,7 +45,7 @@ namespace scanner {
          Производит попытку создания токена, соответствующего состоянию ДКА state и символу с именем name, найденного на строке line и столбце column.
          Возвращает указатель на созданный токен, или nullptr в случае ошибки.
       */
-      Token* createToken(DFAState state, std::string name, int line, int column, std::ostream& errorStream);
+      Token* createToken(DFAState state, std::string name);
 
       /*
          Запускает алгоритм лексического анализа над исходным кодом в файле inputPath,
@@ -49,6 +53,6 @@ namespace scanner {
          Некритичные ошибки, связанные с недопустимыми символами, записываются в поток ошибок errorStream.
          Возвращает список полученных токенов.
       */
-      std::vector<Token> scan(std::string inputPath, std::ostream& errorStream);
+      std::vector<Token> scan(std::string inputPath);
    };
 }

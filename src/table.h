@@ -136,9 +136,7 @@ struct Tables {
       StaticTable _operatorCharacters,
       StaticTable _brackets,
       StaticTable _separators,
-      StaticTable _whitespaces,
-      MutableTable* _identifiers,
-      MutableTable* _literals);
+      StaticTable _whitespaces);
 
    /* 
       Классифицирует символ c по группам символов перехода.

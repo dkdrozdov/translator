@@ -2,26 +2,26 @@
 
 namespace io {
 
-   void logLexicalError(std::string message, int line, int column, std::ostream& errorStream)
+   void IO::logLexicalError(std::string message, int line, int column)
    {
       errorStream << message << " at line " << line << "; character " << column << "." << std::endl;
    }
 
-   void logError(std::string message, std::ostream& errorStream)
-   {  
+   void IO::logError(std::string message)
+   {
       errorStream << message << std::endl;
    }
 
-   void logFileOpeningError(std::string name, std::ostream& errorStream)
+   void IO::logFileOpeningError(std::string name)
    {
       errorStream << "Error: couldn't open file " << name << "." << std::endl;
    }
 
-   StaticTable* readStaticTable(std::string path) {
+   StaticTable* IO::readStaticTable(std::string path) {
       std::ifstream ifs(path);
 
       if (!ifs) {
-         logFileOpeningError(path, std::cerr);
+         logFileOpeningError(path);
          return nullptr;
       }
 
@@ -74,12 +74,12 @@ namespace io {
    file format:
    [var int name value | lit int value]
    */
-   MutableTable* readMutableTable(std::string path)
+   MutableTable* IO::readMutableTable(std::string path)
    {
       std::ifstream ifs(path);
 
       if (!ifs.is_open()) {
-         logFileOpeningError(path, std::cerr);
+         logFileOpeningError(path);
          return nullptr;
       }
 
@@ -172,12 +172,12 @@ namespace io {
       return table;
    }
 
-   void writeStaticTable(std::string path, StaticTable& table) {
+   void IO::writeStaticTable(std::string path, StaticTable& table) {
       std::ofstream ofs(path);
 
       if (!ofs)
       {
-         logFileOpeningError(path, std::cerr);
+         logFileOpeningError(path);
          return;
       }
 
@@ -190,7 +190,7 @@ namespace io {
       for (int i = 0; i < n; i++) {
          std::string entry = entries[i];
 
-         ofs << i << "\t";
+         ofs << i << ",";
 
          if (entry == "\t") {
             ofs << "\\t" << std::endl;
@@ -208,27 +208,27 @@ namespace io {
       ofs.close();
    }
 
-   void writeMutableTable(std::string path, MutableTable& table) {
+   void IO::writeMutableTable(std::string path, MutableTable& table) {
       std::ofstream ofs(path);
 
       if (!ofs.is_open())
       {
-         logFileOpeningError(path, std::cerr);
+         logFileOpeningError(path);
       }
 
       std::vector<TableEntry*> entries = table.table;
       auto n = entries.size();
 
-      ofs << "data\tname\tvalue\tindex" << std::endl;
+      ofs << "data,name,value,index" << std::endl;
 
       for (int i = 0; i < n; i++) {
          TableEntry* entry = entries[i];
          if (entry == nullptr) continue;
          Attributes& attributes = entry->attributes;
          ofs <<
-            attributes.dataType << "\t" <<
-            attributes.name << "\t" <<
-            attributes.value << "\t" <<
+            attributes.dataType << "," <<
+            attributes.name << "," <<
+            attributes.value << "," <<
             entry->tableIndex <<
             std::endl;
       }
@@ -236,22 +236,22 @@ namespace io {
       ofs.close();
    }
 
-   void writeTokens(std::string path, std::vector<Token> tokens)
+   void IO::writeTokens(std::string path, std::vector<Token> tokens)
    {
       std::ofstream ofs(path);
 
       if (!ofs.is_open())
       {
-         logFileOpeningError(path, std::cerr); // TODO: replace std::cerr with stream stored in io class.
+         logFileOpeningError(path);
       }
 
-      ofs << "line\tcolumn\tname\ttable\taddress" << std::endl;
+      ofs << "line,column,name,table,address" << std::endl;
 
       for (auto& token : tokens) {
-         ofs << token.line << "\t" <<
-            token.column << "\t" <<
-            token.name << "\t" <<
-            token.getType() << "\t" <<
+         ofs << token.line << "," <<
+            token.column << "," <<
+            token.name << "," <<
+            token.getType() << "," <<
             token.getAddress() << std::endl;
       }
 

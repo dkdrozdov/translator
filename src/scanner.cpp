@@ -22,22 +22,22 @@ DFA scanner::Scanner::buildDFA(Tables& tables) {
    return df;
 }
 
-scanner::Scanner::Scanner(Tables& _tables) : tables(_tables), dfa(buildDFA(tables)) {}
+scanner::Scanner::Scanner(Tables& _tables, io::IO& _io) : tables(_tables), io(_io), dfa(buildDFA(tables)), currentColumn(1), currentLine(1), chainStartColumn(1) {}
 
-Token* scanner::Scanner::createToken(DFAState state, std::string name, int line, int column, std::ostream& errorStream) {
+Token* scanner::Scanner::createToken(DFAState state, std::string name) {
    switch (state)
    {
    case IDENTIFIER:
    {
       if (tables.keywords.contains(name))
-         return new Token(KEYWORD_TOKEN_TYPE, tables.keywords.find(name), line, column, name, &tables);
+         return new Token(KEYWORD_TOKEN_TYPE, tables.keywords.find(name), currentLine, currentColumn, name, &tables);
 
       TableEntry* entry = tables.identifiers->find(name);
 
       if (entry != nullptr)
-         return new Token(IDENTIFIER_TOKEN_TYPE, entry->tableIndex, line, column, name, &tables);
+         return new Token(IDENTIFIER_TOKEN_TYPE, entry->tableIndex, currentLine, currentColumn, name, &tables);
       else
-         return new Token(IDENTIFIER_TOKEN_TYPE, tables.identifiers->add(Attributes::IntVariableAttributes(name, 0)), line, column, name, &tables);
+         return new Token(IDENTIFIER_TOKEN_TYPE, tables.identifiers->add(Attributes::IntVariableAttributes(name, 0)), currentLine, currentColumn, name, &tables);
 
       return 0;   // For some reason IDENTIFIER state cannot cause any errors.
       break;
@@ -50,7 +50,7 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
          value = std::stoi(name);
       }
       catch (...) {
-         io::logLexicalError("Invalid literal: "s + name, line, column, errorStream);
+         io.logLexicalError("Invalid literal: "s + name, currentLine, currentColumn);
          return nullptr;
       }
 
@@ -58,9 +58,9 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
       TableEntry* entry = tables.literals->find(formattedName);
 
       if (entry != nullptr)
-         return new Token(LITERAL_TOKEN_TYPE, entry->tableIndex, line, column, formattedName, &tables);
+         return new Token(LITERAL_TOKEN_TYPE, entry->tableIndex, currentLine, currentColumn, formattedName, &tables);
       else
-         return new Token(LITERAL_TOKEN_TYPE, tables.literals->add(Attributes::IntLiteralAttributes(value)), line, column, formattedName, &tables);
+         return new Token(LITERAL_TOKEN_TYPE, tables.literals->add(Attributes::IntLiteralAttributes(value)), currentLine, currentColumn, formattedName, &tables);
 
       break;
    }
@@ -68,10 +68,10 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
    case OPERATOR:
    {
       if (tables.operators.contains(name))
-         return new Token(OPERATOR_TOKEN_TYPE, tables.operators.find(name), line, column, name, &tables);
+         return new Token(OPERATOR_TOKEN_TYPE, tables.operators.find(name), currentLine, currentColumn, name, &tables);
       else
       {
-         io::logLexicalError("Error creating token. Couldn't find operator "s + name, line, column, errorStream);
+         io.logLexicalError("Error creating token. Couldn't find operator "s + name, currentLine, currentColumn);
          return nullptr;
       }
 
@@ -80,10 +80,10 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
    case SEPARATOR:
    {
       if (tables.separators.contains(name))
-         return new Token(SEPARATOR_TOKEN_TYPE, tables.separators.find(name), line, column, name, &tables);
+         return new Token(SEPARATOR_TOKEN_TYPE, tables.separators.find(name), currentLine, currentColumn, name, &tables);
       else
       {
-         io::logLexicalError("Error creating token. Couldn't find separator "s + name, line, column, errorStream);
+         io.logLexicalError("Error creating token. Couldn't find separator "s + name, currentLine, currentColumn);
          return nullptr;
       }
       break;
@@ -91,17 +91,17 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
    case BRACKET:
    {
       if (tables.brackets.contains(name))
-         return new Token(BRACKET_TOKEN_TYPE, tables.brackets.find(name), line, column, name, &tables);
+         return new Token(BRACKET_TOKEN_TYPE, tables.brackets.find(name), currentLine, currentColumn, name, &tables);
       else
       {
-         io::logLexicalError("Error creating token. Couldn't find bracket "s + name, line, column, errorStream);
+         io.logLexicalError("Error creating token. Couldn't find bracket "s + name, currentLine, currentColumn);
          return nullptr;
       }
       break;
    }
    default:
    {
-      io::logLexicalError("Error creating token. Invalid DFA state: "s + std::to_string(state), line, column, errorStream);
+      io.logLexicalError("Error creating token. Invalid DFA state: "s + std::to_string(state), currentLine, currentColumn);
       return nullptr;
 
       break;
@@ -111,13 +111,13 @@ Token* scanner::Scanner::createToken(DFAState state, std::string name, int line,
    return nullptr;
 }
 
-std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& errorStream) {
+std::vector<Token> scanner::Scanner::scan(std::string inputPath) {
    std::ifstream ifs(inputPath);
    std::vector<Token> tokens;
 
    if (!ifs)
    {
-      io::logFileOpeningError(inputPath, errorStream);
+      io.logFileOpeningError(inputPath);
       return tokens;
    }
 
@@ -125,19 +125,21 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& e
    std::string chain;
    int previousState = START;
    dfa.setState(START);
-   int line = 1;
-   int character = 1;
+
+   /*    Позиция цепочки в коде     */
+   currentLine = 1;
+   currentColumn = 0;
    int startingCharacter = 1;
 
    bool tokenize = false;
    bool discard = false;
 
    while (ifs.get(c)) {
-      character++;
+      currentColumn++;
 
       if (c == '\n') {
-         line++;
-         character = 1;
+         currentLine++;
+         currentColumn = 1;
       }
 
       CharacterClass characterClass = tables.classify(c);
@@ -149,7 +151,7 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& e
 
       if (characterClass == INVALID_CHARACTER)
       {
-         io::logLexicalError("Invalid character: "s + c, line, character, errorStream);
+         io.logLexicalError("Invalid character: "s + c, currentLine, currentColumn);
          continue;
       }
 
@@ -158,14 +160,14 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& e
 
       if (dfa.getState() == FAIL && chain != "")   // ДКА в состоянии неудачи, что означает что цепочка завершена или недопустима.
       {
-         Token* newToken = createToken((DFAState)previousState, chain, line, startingCharacter, errorStream);
+         Token* newToken = createToken((DFAState)previousState, chain);
          if (newToken)
             tokens.push_back(*newToken); // Проверка цепочки и добавление нового токена.
 
 
          dfa.setState(START); // Сброс ДКА.
          chain = "";          // Сброс цепочки.
-         startingCharacter = character;
+         startingCharacter = currentColumn;
          tokenize = true;
       }
 
@@ -187,7 +189,7 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& e
       {
          dfa.setState(START);
          previousState = START;
-         startingCharacter = character;
+         startingCharacter = currentColumn;
       }
       else
          previousState = dfa.getState();
@@ -195,7 +197,7 @@ std::vector<Token> scanner::Scanner::scan(std::string inputPath, std::ostream& e
    if (chain != "") {   // Цикл завершился досрочно, попытка сделать токен из последней цепочки.
       // try/catch removed: createToken should handle errors and log them
       {
-         Token* newToken = createToken((DFAState)previousState, chain, line, startingCharacter, errorStream);
+         Token* newToken = createToken((DFAState)previousState, chain);
 
          if (newToken)
             tokens.push_back(*newToken);

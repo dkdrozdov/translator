@@ -183,29 +183,29 @@ void StaticTable::print() const {
 
 // Tables
 
-Tables::Tables(StaticTable _keywords, StaticTable _operators, StaticTable _letters, StaticTable _digits, StaticTable _operatorCharacters, StaticTable _brackets, StaticTable _separators, StaticTable _whitespaces, MutableTable* _identifiers, MutableTable* _literals) :
-    keywords(_keywords),
-    operators(_operators),
-    letters(_letters),
-    digits(_digits),
-    operatorCharacters(_operatorCharacters),
-    brackets(_brackets),
-    separators(_separators),
-    whitespaces(_whitespaces),
-    identifiers(_identifiers),
-    literals(_literals) {}
+Tables::Tables(StaticTable _keywords, StaticTable _operators, StaticTable _letters, StaticTable _digits, StaticTable _operatorCharacters, StaticTable _brackets, StaticTable _separators, StaticTable _whitespaces) :
+   keywords(_keywords),
+   operators(_operators),
+   letters(_letters),
+   digits(_digits),
+   operatorCharacters(_operatorCharacters),
+   brackets(_brackets),
+   separators(_separators),
+   whitespaces(_whitespaces),
+   identifiers(new MutableTable()),
+   literals(new MutableTable()) {}
 
 CharacterClass Tables::classify(char c) {
-    std::string cs = { c };
+   std::string cs = { c };
 
-    if (letters.contains(cs)) return LETTER_CHARACTER;
-    if (digits.contains(cs)) return DIGIT_CHARACTER;
-    if (operatorCharacters.contains(cs)) return OPERATOR_CHARACTER_CHARACTER;
-    if (brackets.contains(cs)) return BRACKET_CHARACTER;
-    if (separators.contains(cs)) return SEPARATOR_CHARACTER;
-    if (whitespaces.contains(cs)) return WHITESPACE_CHARACTER;
-    if (cs == "=") return EQUAL_SIGN_CHARACTER;
-    if (cs == "!") return EXCLAMATION_MARK_CHARACTER;
+   if (letters.contains(cs)) return LETTER_CHARACTER;
+   if (digits.contains(cs)) return DIGIT_CHARACTER;
+   if (operatorCharacters.contains(cs)) return OPERATOR_CHARACTER_CHARACTER;
+   if (brackets.contains(cs)) return BRACKET_CHARACTER;
+   if (separators.contains(cs)) return SEPARATOR_CHARACTER;
+   if (whitespaces.contains(cs)) return WHITESPACE_CHARACTER;
+   if (cs == "=") return EQUAL_SIGN_CHARACTER;
+   if (cs == "!") return EXCLAMATION_MARK_CHARACTER;
 
-    return INVALID_CHARACTER;
+   return INVALID_CHARACTER;
 }
